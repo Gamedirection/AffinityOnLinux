@@ -431,6 +431,29 @@ install_affinity() {
     local app_name=$1
     local directory="$HOME/.AffinityLinux"
     
+    # Verify .NET is installed before attempting app installation
+    echo -e "${YELLOW}Checking prerequisites...${NC}"
+    
+    local dotnet_ok=true
+    if [ ! -d "$directory/drive_c/windows/Microsoft.NET/Framework/v2.0.50727" ] && \
+       [ ! -d "$directory/drive_c/windows/Microsoft.NET/Framework/v3.5" ]; then
+        echo -e "${RED}ERROR: .NET Framework 3.5 is not installed!${NC}"
+        dotnet_ok=false
+    fi
+    
+    if [ ! -d "$directory/drive_c/windows/Microsoft.NET/Framework/v4.0.30319" ]; then
+        echo -e "${RED}ERROR: .NET Framework 4.8 is not installed!${NC}"
+        dotnet_ok=false
+    fi
+    
+    if [ "$dotnet_ok" = false ]; then
+        echo -e "${RED}Affinity apps require .NET Framework to be installed.${NC}"
+        echo -e "${YELLOW}Please run Full Setup first (option 1 from startup menu)${NC}"
+        return 1
+    fi
+    
+    echo -e "${GREEN}✓ Prerequisites check passed${NC}"
+    
     # Verify Windows version before installation
     verify_windows_version
     
@@ -462,8 +485,37 @@ install_affinity() {
     # Kill any stuck wine processes before running installer
     kill_stuck_wine_processes
     
-    # Run installer with debug messages suppressed
-    WINEPREFIX="$directory" WINEDEBUG=-all "$directory/ElementalWarriorWine/bin/wine" "$directory/$filename"
+    # Run installer with better error handling
+    echo -e "${YELLOW}Starting installer (this may take several minutes)...${NC}"
+    echo -e "${YELLOW}You may see some error dialogs - click 'No' or 'Cancel' on them.${NC}"
+    
+    # Run installer with minimal debug output but capture critical errors
+    WINEPREFIX="$directory" WINEDEBUG="-all,+err,+seh" "$directory/ElementalWarriorWine/bin/wine" "$directory/$filename" 2>&1 | \
+        grep -v "fixme:" | grep -v "warn:" | head -100 &
+    
+    local installer_pid=$!
+    
+    # Wait for installer to finish (with timeout)
+    local timeout=600  # 10 minutes
+    local elapsed=0
+    
+    while kill -0 $installer_pid 2>/dev/null; do
+        sleep 5
+        elapsed=$((elapsed + 5))
+        
+        if [ $elapsed -ge $timeout ]; then
+            echo -e "${RED}Installer appears to be stuck. Killing process...${NC}"
+            kill -9 $installer_pid 2>/dev/null
+            break
+        fi
+        
+        # Show progress indicator
+        if [ $((elapsed % 30)) -eq 0 ]; then
+            echo -e "${YELLOW}Installer still running... ($elapsed seconds elapsed)${NC}"
+        fi
+    done
+    
+    wait $installer_pid 2>/dev/null
     
     # Clean up any stuck processes after installation
     kill_stuck_wine_processes
@@ -488,21 +540,90 @@ install_affinity() {
     esac
     
     echo -e "${GREEN}Affinity $app_name installation completed!${NC}"
+    echo ""
+    echo -e "${YELLOW}If the app doesn't appear in your menu or crashes, try:${NC}"
+    echo -e "1. Manually run: WINEPREFIX=$directory $directory/ElementalWarriorWine/bin/wine '$directory/$filename'"
+    echo -e "2. Check if it installed: ls -la '$directory/drive_c/Program Files/Affinity/'"
+    echo -e "3. Report errors at: https://github.com/ryzendew/ElementalWarrior-Wine-binaries/issues"
 }
 
 # ==========================================
 # User Interface Functions
 # ==========================================
 
-# Main menu
+# Function to check if Wine is already installed
+check_wine_installation() {
+    local directory="$HOME/.AffinityLinux"
+    
+    # Check if Wine prefix exists
+    if [ ! -d "$directory" ]; then
+        return 1
+    fi
+    
+    # Check if ElementalWarriorWine exists
+    if [ ! -f "$directory/ElementalWarriorWine/bin/wine" ]; then
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to show installation status
+show_installation_status() {
+    local directory="$HOME/.AffinityLinux"
+    
+    echo -e "${GREEN}======================================${NC}"
+    echo -e "${GREEN}Current Installation Status${NC}"
+    echo -e "${GREEN}======================================${NC}"
+    
+    if [ -f "$directory/ElementalWarriorWine/bin/wine" ]; then
+        echo -e "  ${GREEN}✓${NC} ElementalWarriorWine installed"
+    else
+        echo -e "  ${RED}✗${NC} ElementalWarriorWine NOT installed"
+    fi
+    
+    if [ -d "$directory/drive_c/windows/Microsoft.NET/Framework/v2.0.50727" ] || \
+       [ -d "$directory/drive_c/windows/Microsoft.NET/Framework/v3.5" ]; then
+        echo -e "  ${GREEN}✓${NC} .NET Framework 3.5 installed"
+    else
+        echo -e "  ${RED}✗${NC} .NET Framework 3.5 NOT installed"
+    fi
+    
+    if [ -d "$directory/drive_c/windows/Microsoft.NET/Framework/v4.0.30319" ]; then
+        echo -e "  ${GREEN}✓${NC} .NET Framework 4.8 installed"
+    else
+        echo -e "  ${RED}✗${NC} .NET Framework 4.8 NOT installed"
+    fi
+    
+    if [ -d "$directory/drive_c/windows/Fonts" ] && [ "$(ls -A $directory/drive_c/windows/Fonts 2>/dev/null | wc -l)" -gt 10 ]; then
+        echo -e "  ${GREEN}✓${NC} Fonts installed"
+    else
+        echo -e "  ${YELLOW}⚠${NC} Fonts may need installation"
+    fi
+    
+    echo -e "${GREEN}======================================${NC}"
+    echo ""
+}
+
+# Startup menu
+show_startup_menu() {
+    echo -e "${GREEN}======================================${NC}"
+    echo -e "${GREEN}Affinity Linux Setup Script${NC}"
+    echo -e "${GREEN}======================================${NC}"
+    echo "1. Full Setup (Install Wine + Dependencies)"
+    echo "2. App Installation Only (Skip Wine Setup)"
+    echo "3. Exit"
+    echo -n "Please select an option (1-3): "
+}
+
+# Main menu for app installation
 show_menu() {
-    echo -e "${GREEN}Affinity Installation Script${NC}"
+    echo -e "${GREEN}Affinity App Installation${NC}"
     echo "1. Install Affinity Photo"
     echo "2. Install Affinity Designer"
     echo "3. Install Affinity Publisher"
-    echo "4. Show Special Thanks"
-    echo "5. Exit"
-    echo -n "Please select an option (1-5): "
+    echo "4. Exit"
+    echo -n "Please select an option (1-4): "
 }
 
 # ==========================================
@@ -513,14 +634,73 @@ main() {
     # Detect distribution
     detect_distro
     echo -e "${GREEN}Detected distribution: $DISTRO $VERSION${NC}"
+    echo ""
     
-    # Check and install dependencies
-    check_dependencies
+    # Check if Wine is already installed
+    local wine_installed=false
+    if check_wine_installation; then
+        wine_installed=true
+        show_installation_status
+        
+        # Show startup menu
+        show_startup_menu
+        read -r startup_choice
+        
+        case $startup_choice in
+            1)
+                # Full setup - warn user
+                echo ""
+                echo -e "${YELLOW}======================================${NC}"
+                echo -e "${YELLOW}WARNING: Wine is already installed!${NC}"
+                echo -e "${YELLOW}======================================${NC}"
+                echo -e "This will ${RED}REINSTALL${NC} everything and may take 40-60 minutes."
+                echo -e "Your existing installation will be backed up."
+                echo ""
+                echo -n "Do you want to continue? (yes/no): "
+                read -r confirm
+                
+                if [ "$confirm" != "yes" ] && [ "$confirm" != "y" ]; then
+                    echo -e "${GREEN}Skipping full setup. Proceeding to app installation...${NC}"
+                    echo ""
+                else
+                    # Backup existing installation
+                    echo -e "${YELLOW}Backing up existing installation...${NC}"
+                    mv "$HOME/.AffinityLinux" "$HOME/.AffinityLinux.backup.$(date +%Y%m%d_%H%M%S)"
+                    echo -e "${GREEN}Backup completed${NC}"
+                    wine_installed=false
+                fi
+                ;;
+            2)
+                # Skip to app installation
+                echo -e "${GREEN}Skipping Wine setup. Proceeding to app installation...${NC}"
+                echo ""
+                ;;
+            3)
+                echo -e "${GREEN}Exiting...${NC}"
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}Invalid option. Proceeding to app installation...${NC}"
+                echo ""
+                ;;
+        esac
+    fi
     
-    # Setup Wine (only once)
-    setup_wine
+    # Run full setup if Wine is not installed or user chose to reinstall
+    if [ "$wine_installed" = false ]; then
+        echo -e "${GREEN}Starting full Wine setup...${NC}"
+        echo ""
+        
+        # Check and install dependencies
+        check_dependencies
+        
+        # Setup Wine
+        setup_wine
+    fi
     
+    # App installation menu loop
     while true; do
+        echo ""
         show_menu
         read -r choice
         
@@ -535,9 +715,6 @@ main() {
                 install_affinity "Publisher"
                 ;;
             4)
-                show_special_thanks
-                ;;
-            5)
                 echo -e "${GREEN}Thank you for using the Affinity Installation Script!${NC}"
                 exit 0
                 ;;
@@ -546,7 +723,7 @@ main() {
                 ;;
         esac
         
-        echo
+        echo ""
         read -n 1 -s -r -p "Press any key to continue..."
         clear
     done
@@ -554,3 +731,4 @@ main() {
 
 # Run main function
 main 
+
