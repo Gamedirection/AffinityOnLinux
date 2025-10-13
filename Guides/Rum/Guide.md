@@ -135,7 +135,15 @@ wine-ew-affinity wineboot --init
 Now run winetricks with the following options to install all the needed dependencies in your Affinity prefix:
 
 ```bash
-wine-ew-affinity winetricks --unattended --force remove_mono vcrun2022 dotnet48 renderer=vulkan corefonts win11
+wine-ew-affinity winetricks --unattended --force remove_mono vcrun2022 dotnet48  corefonts win11
+```
+
+> [!NOTE]
+> We set the renderer to vulkan in a separate step, after all the previews winetricks have been applied.
+
+
+```bash
+wine-ew-affinity winetricks renderer=vulkan
 ```
 
 > [!NOTE]
@@ -170,7 +178,7 @@ We're finally ready to actually run the installer.
 I'll use the installer for Affinity Photo V1 as an example.
 
 ```bash
-wine-ew-affinity wine downloads/affinity-photo-1.10.6.exe
+wine-ew-affinity wine ~/Downloads/affinity-photo-1.10.6.exe
 ```
 
 ![installer](./Screenshots/installer.png)
@@ -207,6 +215,9 @@ wine-ew-affinity winecfg
 > So, for a 4k monitor, setting the desktop size to `1920 x 1080` and scaling it by 200% works quite well.
 
 ![DPI Fix](./Screenshots/dpifix.png)
+
+## Creating a .desktop launcher
+Create a .desktop launcher by following this [Desktop Launcher Guide](https://github.com/seapear/AffinityOnLinux/blob/main/Guides/Rum/Guide-DesktopLauncher.md) so you can open affinity from your desktop.
 
 ## Credits
 Thanks to:
