@@ -2,7 +2,7 @@
 
 ### What is this project about?
 As users of AffinityOnLinux ourselves, we know firsthand how valuable this tool is. Our goal is to:
-- Maintain reliability and ease-of-use to install Serifs program Affinity Sutie, Photo, Designer & Publisher on Linux.
+- Maintain reliability and ease-of-use to install Serifs program Affinity Suite, Photo, Designer & Publisher on Linux.
 - Provide clear and friendly help for new users of Affinity and Linux, especially for artists who may not be programmers or system admins
 - Streamline the onboarding process so creativity can stay the main focus
 
@@ -15,7 +15,7 @@ As users of AffinityOnLinux ourselves, we know firsthand how valuable this tool 
 
 ## How to Use This Guide:
 
-1. Check if your Linux distribution is compatable: [Tested distros](#tested-methods)
+1. Check if your Linux distribution is compatible: [Tested distros](#tested-methods)
 2. Choose a Wine manager: [Lutris](https://lutris.net/), [Heroic Games Launcher](https://heroicgameslauncher.com/), [Bottles](https://usebottles.com/) or [Rum](https://gitlab.com/xkero/rum).
 3. Choose a guide based on your Wine manager of choice: 
   - [Lutris](./Guides/Lutris/Guide.md) (Recommended)
@@ -31,15 +31,19 @@ As users of AffinityOnLinux ourselves, we know firsthand how valuable this tool 
 
 ### Which Affinity versions are supported?
 *Affinity v1 and v2 both work in most cases using this tutorial.*
+
 > [!TIP]
-> Official Affinity installers download links:
+> Official installers download links:
 >
 > | Program | URL |
 > |---------|-----|
-> |V2 (all)     |https://store.serif.com/en-us/account/licences/         |
-> |Photo V1     | https://store.serif.com/it/update/windows/photo/1/     |
-> |Designer V1  | https://store.serif.com/it/update/windows/designer/1/  |
-> |Publisher V1 | https://store.serif.com/it/update/windows/publisher/1/ |
+> |Affinity by Canva | https://www.affinity.studio/download           |
+> |Photo V2     | https://store.serif.com/update/windows/photo/2/     |
+> |Designer V2  | https://store.serif.com/update/windows/designer/2/  |
+> |Publisher V2 | https://store.serif.com/update/windows/publisher/2/ |
+> |Photo V1     | https://store.serif.com/update/windows/photo/1/     |
+> |Designer V1  | https://store.serif.com/update/windows/designer/1/  |
+> |Publisher V1 | https://store.serif.com/update/windows/publisher/1/ |
 
 > [!WARNING]
 > Be advised that, if you purchased the old **1.X version** of the Affinity applications through the [**Windows Store**](https://apps.microsoft.com/), you will **not** be able to activate your old licence on another operating systems other than Windows.  
@@ -47,18 +51,19 @@ As users of AffinityOnLinux ourselves, we know firsthand how valuable this tool 
 
 ### 🧪 Tested Methods
 
-| Distro/Method | [Lutris](https://lutris.net/) | [Heroic](https://heroicgameslauncher.com/) | [Bottles](https://usebottles.com/) | [Rum](https://gitlab.com/xkero/rum) |
-|---------------|--------|--------|---------|-----|
-| [Debian](https://www.debian.org/)    | ✔️     | ✔️     | ✔️     | ✔️  |
-| [Fedora Linux](https://fedoraproject.org/)    | ✔️     | ✔️     | ✔️     | ✔️  |
-| [Arch Linux](https://archlinux.org/)      | ✔️     | ✔️     | [✔️](https://github.com/seapear/AffinityOnLinux/issues/64)     | ✔️  |
-| [Ubuntu](https://ubuntu.com/)    | ✔️     | ✔️     | ✔️     | ✔️  |
-| [Zorin OS](https://zorin.com/os/)     | [✔️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [⚠️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [⚠️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [❌](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305386111)  | 
-| [CachyOS](https://cachyos.org/)     | ✔️     | ✔️     | ❓     | ✔️  |
-| [EndeavourOS](https://endeavouros.com/)   | ✔️     | ✔️     | ❓     | ✔️  |
-| [Nobara Linux](https://nobaraproject.org/)   | ✔️     | ✔️     | ❓     | ✔️  |
-| [SteamOS](https://store.steampowered.com/steamos)   | ✔️     | ✔️     | ❓     | ❓  |
-| [Pop!_OS](https://system76.com/pop/)   | ❓     | ❓     | ❓     | [✔️](https://discord.com/channels/1281706644073611358/1281706644715208809/1419434351019687948)  |
+| Distro/Method | [Wine 10.17+](https://www.winehq.org/) | [Lutris](https://lutris.net/) | [Heroic](https://heroicgameslauncher.com/) | [Bottles](https://usebottles.com/) | [Rum](https://gitlab.com/xkero/rum) |
+|---------------|--------|--------|---------|-----|-----|
+| [Debian](https://www.debian.org/)    | ✔️     | ✔️     | ✔️     | ✔️     | ✔️  |
+| [Fedora Linux](https://fedoraproject.org/)    | ✔️     | ✔️     | ✔️     | ✔️     | ✔️  |
+| [Arch Linux](https://archlinux.org/)      | ✔️     | ✔️     | ✔️     | [✔️](https://github.com/seapear/AffinityOnLinux/issues/64)     | ✔️  |
+| [Ubuntu](https://ubuntu.com/)    | ✔️     | ✔️     | ✔️     | ✔️     | ✔️  |
+| [Zorin OS](https://zorin.com/os/)     | ✔️     | [✔️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [⚠️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [⚠️](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305525078)     | [❌](https://github.com/seapear/AffinityOnLinux/issues/53#issuecomment-3305386111)  | 
+| [CachyOS](https://cachyos.org/)     | ✔️     | ✔️     | ✔️     | ❓     | ✔️  |
+| [EndeavourOS](https://endeavouros.com/)   | ✔️     | ✔️     | ✔️     | ❓     | ✔️  |
+| [Nobara Linux](https://nobaraproject.org/)   | ✔️     | ✔️     | ✔️     | ❓     | ✔️  |
+| [SteamOS](https://store.steampowered.com/steamos)   | ✔️     | ✔️     | ✔️     | ❓     | ❓  |
+| [Pop!_OS](https://system76.com/pop/)   | ✔️     | ❓     | ❓     | ❓     | [✔️](https://discord.com/channels/1281706644073611358/1281706644715208809/1419434351019687948)  |
+| [NixOS](https://nixos.org/)   | [✔️](https://discord.com/channels/1281706644073611358/1281706644715208809/1436009152660115536)     | [✔️](https://discord.com/channels/1281706644073611358/1281706644715208809/1436017076350488801)     | ❓     | ❓     | ❓   |
 
 Click on icon for more context if available:
 ❓ Untested
@@ -67,8 +72,8 @@ Click on icon for more context if available:
 ❌ Not Working
 
 ### 📚 Guides
-
-- [Lutris](./Guides/Lutris/Guide.md) (Recommended)
+- [Wine 10.17+](https://github.com/seapear/AffinityOnLinux/blob/main/Guides/Wine/Guide.md) (Minimal & Recommended)
+- [Lutris](./Guides/Lutris/Guide.md) (Recommended if you want a GUI Wine manager)
 - [Heroic Games Launcher](./Guides/Heroic/Guide.md)
 - [Bottles](./Guides/Bottles/Guide.md)
 - [Rum](./Guides/Rum/Guide.md) (terminal)

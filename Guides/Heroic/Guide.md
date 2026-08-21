@@ -2,7 +2,15 @@
 
 <img src="/Assets/NewLogos/AffinityHGL.png" width="400"/>
 
-Before doing anything, make sure you have a `.exe` version of Affinity Photo, Affinity Designer, and/or Affinity Publisher downloaded from the official Affinity website: https://store.serif.com/en-us/account/downloads
+Before doing anything, make sure you have a `.exe` version of Affinity apps. You can download Affinity apps from the official Affinity websites:
+
+- [Affinity by Canva](https://www.affinity.studio/download) (select "Enterprise (Intel/AMD)" from the "Download for Windows" drop-down menu to download the EXE installer)
+- [Affinity Photo V2](https://store.serif.com/update/windows/photo/2/) 
+- [Affinity Designer V2](https://store.serif.com/update/windows/designer/2/)
+- [Affinity Publisher V2](https://store.serif.com/update/windows/publisher/2/) 
+- [Affinity Photo V1](https://store.serif.com/update/windows/photo/1/)
+- [Affinity Designer V1](https://store.serif.com/update/windows/designer/1/)
+- [Affinity Publisher V1](https://store.serif.com/update/windows/publisher/1/)
 
 ## 1. Install Heroic Games Launcher
 
@@ -12,16 +20,18 @@ Visit the [download page of Heroic Games Launcher's official website](https://he
 
 Choose one of the following forks of Wine, and download and extract it: 
 
-- [**ElementalWarriorWine**](https://github.com/Twig6943/wine/releases) (Recommended) — After downloading the `ElementalWarriorWine-x86_64.tar.gz` archive file, right click and extract the archive into an `ElementalWarriorWine-x86_64` folder.
+- [ElementalWarrior-x86_64](https://github.com/seapear/AffinityOnLinux/releases/download/Legacy/ElementalWarriorWine-x86_64.tar.gz) (Recommended) — After downloading the `ElementalWarriorWine-x86_64.tar.gz` archive file, right click and extract the archive into an `ElementalWarriorWine-x86_64` folder.
 
-- [**Wine-TKG-affinity**](https://github.com/daegalus/wine-tkg-affinity/releases) — Download the ` wine-tkg-affinity-archbuilt.tar.zst` archive file, then extract the `usr/` folder from the archive and rename the folder to `wine-tkg-affinity-x86_64`.
+- [**Wine-TKG-affinity**](https://github.com/daegalus/wine-tkg-affinity/releases) — Download the ` wine-tkg-affinity-archbuilt.tar.zst` archive file, then extract to the `usr/` folder from the archive and rename the folder to `wine-tkg-affinity-x86_64`.
 
 ## 3. Copy and Paste Wine Fork Binaries to Heroic Games Launcher
 
-Copy and paste the extracted Wine fork folder from the previous step to Heroic Games Launcher’s Wine directory:
+Heroic Games Launcher's Wine-related folders can be found in a hidden directory within your `home` folder. If you can't see hidden folders in your file browser, you can usually enable them by pressing `Ctrl + H`.
 
-- **Flatpak:** `~/.var/app/com.heroicgameslauncher.hgl/config/heroic/tools/wine`
-- **Other Install Methods:** `~/.config/heroic/tools/wine`
+- If you installed Heroic Games Launcher via **Flatpak**, navigate to `/home/$USER/.var/app/com.heroicgameslauncher.hgl/config/heroic/tools/wine/`
+- If you installed Heroic Games Launcher via other methods, navigate to `/home/$USER/.config/heroic/tools/wine/`
+
+Copy and paste the Wine fork folder you extracted in the previous step to this folder.
 
 ## 4. Add Game in Heroic Games Launcher
 
@@ -35,6 +45,7 @@ Copy and paste the extracted Wine fork folder from the previous step to Heroic G
 
 1. Run the setup file from Heroic to initialize the prefix.
    - It may crash. If it somehow runs successfully, close it manually.
+   - Default location is: `/home/$USER/Games/Heroic/Prefixes/default/Affinity`.
 
 ## 6. Configure Dependencies with Winetricks
 
@@ -86,7 +97,7 @@ Quote from **darkside99**:
 
 ### Dark Theme for Wine
 
-1. Visit the [repository's `wine-dark-theme.reg` file page](/Auxillary/Other/wine-dark-theme.reg) to download the `.reg` file by clicking the download button on the top right.
+1. Visit the [repository's `wine-dark-theme.reg` file page](/Auxiliary/Other/wine-dark-theme.reg) to download the `.reg` file by clicking the download button on the top right.
 2. Save the file to your Downloads folder.
 3. Launch a terminal app to open the terminal, then type `cd Downloads` to change to your Downloads folder.
 4. Run the following command:

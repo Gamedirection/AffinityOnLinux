@@ -4,7 +4,18 @@ Currently, Lutris is the best method for Nvidia GPU users.
 
 <img src="/Assets/NewLogos/AffinityLutris.png" width="400"/>
 
-Before doing anything, make sure you have a `.exe` version of Affinity Photo, Affinity Designer, and/or Affinity Publisher downloaded from the official Affinity website: https://store.serif.com/en-us/account/downloads
+Before doing anything, make sure you have a `.exe` version of Affinity apps. You can download Affinity apps from the official Affinity websites:
+
+- [Affinity by Canva](https://www.affinity.studio/download) (select "Enterprise (Intel/AMD)" from the "Download for Windows" drop-down menu to download the EXE installer)
+- [Affinity Photo V2](https://store.serif.com/update/windows/photo/2/) 
+- [Affinity Designer V2](https://store.serif.com/update/windows/designer/2/)
+- [Affinity Publisher V2](https://store.serif.com/update/windows/publisher/2/) 
+- [Affinity Photo V1](https://store.serif.com/update/windows/photo/1/)
+- [Affinity Designer V1](https://store.serif.com/update/windows/designer/1/)
+- [Affinity Publisher V1](https://store.serif.com/update/windows/publisher/1/)
+
+> [!NOTE]
+> A new guide for a quicker install of Affinity with Lutris using an experimental fork of Wine 10.17+ can be found here: [`/Guides/Lutris/Guide-V2.md`](/Guides/Lutris/Guide-V2.md).
 
 ## 1. Install winetricks
 
@@ -39,18 +50,21 @@ Alternately, you can visit the [download page of Lutris' official website](https
 
 Choose one of the following forks of Wine, and download and extract it: 
 
-- [**ElementalWarriorWine**](https://github.com/Twig6943/wine/releases) (Recommended) — Download `ElementalWarriorWine-x86_64.tar.gz`, then right click and extract it. You should have a folder now called `ElementalWarriorWine-x86_64` which we'll copy in the next step.
+- [**ElementalWarrior-x86_64**](https://github.com/seapear/AffinityOnLinux/releases/download/Legacy/ElementalWarriorWine-x86_64.tar.gz) (Recommended) — Download `ElementalWarriorWine-x86_64.tar.gz`, then right click and extract it. You should have a folder now called `ElementalWarriorWine-x86_64` which we'll copy in the next step.
 
 - [**Wine-TKG-affinity**](https://github.com/daegalus/wine-tkg-affinity/releases) — Download the ` wine-tkg-affinity-archbuilt.tar.zst` archive file, then extract the `usr/` folder from the archive and rename the folder to `wine-tkg-affinity-x86_64`.
 
 ## 4. Copy and paste Wine fork to Lutris' system directory
 
-Lutris' Wine-related folders can be found in a hidden directory within your `home` folder. If you can't see hidden folders in your file browser, you can usually enable them by pressing `Ctrl + H`
+> [!NOTE]
+> After you installed Lutris, make sure to launch Lutris at least once to generate the folder structure.
+
+Lutris' Wine-related folders can be found in a hidden directory within your `home` folder. If you can't see hidden folders in your file browser, you can usually enable them by pressing `Ctrl + H`.
 
 - If you installed Lutris via **Flatpak**, navigate to `/home/$USER/.var/app/net.lutris.Lutris/data/lutris/runners/`
 - If you installed Lutris via **AppImage** or other methods, navigate to `/home/$USER/.local/share/lutris/runners/`
 
-Create a folder called `wine` if one does not already exist, then copy and paste the folder you extracted in the previous step to this folder.
+Create a folder called `wine` if one does not already exist, then copy and paste the Wine fork folder you extracted in the previous step to this folder.
 
 This is also known as your Wine runner.
 
@@ -77,24 +91,42 @@ At this point, you should be in the 🎮 Games section of Lutris where a blank r
 
 1. Under the first tab, `Game info`, change the `Name` field from Affinity Suite to the name of the app you just installed: Affinity Photo, Affinity Designer, or Affinity Publisher.
 2. Next to the `Identifier` field (towards the bottom), press `Change` then type in the correlated app name in lowercase and dashes, then press `Apply` to apply the change: 
-    * `affinity-photo`
-    * `affinity-designer`
-    * `affinity-publisher`
+   * `affinity-canva`
+   * `affinity-photo`
+   * `affinity-designer`
+   * `affinity-publisher`
 
-3. You can find icons, cover art and banners for Affinity apps in AffinityOnLinux's [`Icons`](/Assets/Icons) and [`Covers`](/Assets/Covers) folders.
+3. You can find and download icons, cover art and banners for Affinity apps in AffinityOnLinux repository's [`Icons`](/Assets/Icons) and [`Covers`](/Assets/Covers) folders, then set these art assets under the `Game info` tab.
 4. Switch to the `Game options` tab. 
 5. In the **`Executable`** field, copy and paste one of the following:
-   Affinity Photo:
+
+   Affinity by Canva:
+      ```shell
+      drive_c/Program Files/Affinity/Affinity/Affinity.exe
+      ```
+   Affinity Photo V2:
       ```shell
       drive_c/Program Files/Affinity/Photo 2/Photo.exe
       ```
-   Affinity Designer:
+   Affinity Designer V2:
       ```shell
       drive_c/Program Files/Affinity/Designer 2/Designer.exe
       ```
-   Affinity Publisher:
+   Affinity Publisher V2:
       ```shell
       drive_c/Program Files/Affinity/Publisher 2/Publisher.exe
+      ```
+   Affinity Photo V1:
+      ```shell
+      drive_c/Program Files/Affinity/Photo/Photo.exe
+      ```
+   Affinity Designer V1:
+      ```shell
+      drive_c/Program Files/Affinity/Designer/Designer.exe
+      ```
+   Affinity Publisher V1:
+      ```shell
+      drive_c/Program Files/Affinity/Publisher/Publisher.exe
       ```
 
 6. Click `Save`.
@@ -144,7 +176,7 @@ Note that these Wine configuration settings will apply to all Affinity apps you 
 
 To enable the dark theme for Wine, follow these steps:
 
-1. Visit the [repository's `wine-dark-theme.reg` file page](/Auxillary/Other/wine-dark-theme.reg) to download the `.reg` file by clicking the download button on the top right just like we did for the `.yaml` file earlier.
+1. Visit the [repository's `wine-dark-theme.reg` file page](/Auxiliary/Other/wine-dark-theme.reg) to download the `.reg` file by clicking the download button on the top right just like we did for the `.yaml` file earlier.
 2. Save the file to your Downloads folder.
 3. Launch your terminal app, then type `cd Downloads` to change to your Downloads folder.
 4. Run the following command:

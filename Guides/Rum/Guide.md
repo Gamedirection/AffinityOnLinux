@@ -2,8 +2,7 @@
 
 ## Preface
 
-This guide aims to provide a way to manage wine that does not make use of launchers like Lutris or Bottles.  
-We will instead use `rum`, a small shell script that will help us manage multiple wine runners.
+This guide aims to provide a way to manage Wine that does not make use of GUI launchers like Lutris or Bottles. We will instead use [`rum`](https://gitlab.com/xkero/rum), a small shell script that will help us manage multiple Wine runners.
 
 ## Dependencies
 Install the following programs (or the equivalent for your distro) before proceeding. 
@@ -41,11 +40,11 @@ mkdir -p ~/.local/share/wine/prefixes
 Then we'll download a build of ElementalWarrior's wine fork and `unzip` it.
 
 > [!NOTE]
-> You can check [Twig6943's GitHub releases](https://github.com/Twig6943/wine/releases) page for newer builds of ElementalWarrior's wine fork.
+> You can check [ElementalWarrior-x86_64](https://github.com/seapear/AffinityOnLinux/releases/download/Legacy/ElementalWarriorWine-x86_64.tar.gz) page for newer builds of ElementalWarrior's wine fork.
 
 ```bash
 pushd ~/.local/share/wine/runners &&
-wget https://github.com/Twig6943/wine/releases/download/9.13/ElementalWarriorWine-x86_64.tar.gz &&
+wget https://github.com/seapear/AffinityOnLinux/releases/download/Legacy/ElementalWarriorWine-x86_64.tar.gz &&
 tar xvzf ElementalWarriorWine-x86_64.tar.gz &&
 rm ElementalWarriorWine-x86_64.tar.gz &&
 popd
@@ -98,14 +97,15 @@ ElementalWarriorWine-x86_64
 Notice how `rum` correctly found our `ElementalWarriorWine`.
 
 ## Alias Setup
-We'll register an alias so that we don't need to always give `rum` the full path to the affinity wine prefix.  
+
+We'll register an alias so that we don't need to always give `rum` the full path to the affinity wine prefix.
 Open either your `.bashrc` or dedicated `.bash_aliases` file, and add the following alias:
 
 ```bash
 alias wine-ew-affinity='rum ElementalWarriorWine-x86_64 $HOME/.local/share/wine/prefixes/affinity/'
 ```
 
-I gave mine a pretty verbose name, but feel free to name it how you like.  
+I gave mine a pretty verbose name, but feel free to name it how you like.
 Also remember to `source` the file you just modified for the changes to take effect, e.g:
 ```bash
 source ~/.bash_aliases
@@ -135,7 +135,7 @@ wine-ew-affinity wineboot --init
 Now run winetricks with the following options to install all the needed dependencies in your Affinity prefix:
 
 ```bash
-wine-ew-affinity winetricks --unattended --force remove_mono vcrun2022 dotnet48  corefonts win11
+wine-ew-affinity winetricks --unattended --force remove_mono vcrun2022 dotnet48  corefonts tahoma win11
 ```
 
 > [!NOTE]
@@ -162,20 +162,26 @@ popd
 ```
 
 ## Installing Affinity Software
-We're finally ready to actually run the installer.
+
+We're finally ready to actually run the installer. You need an installer of Affinity software in the EXE format, not MSIX format.
 
 > [!TIP]
-> Official installers download links:
+>  Official download links of Affinity installers:
 >
 > | Program | URL |
 > |---------|-----|
-> |V2 (all)     |https://store.serif.com/en-us/account/licences/         |
-> |Photo V1     | https://store.serif.com/it/update/windows/photo/1/     |
-> |Designer V1  | https://store.serif.com/it/update/windows/designer/1/  |
-> |Publisher V1 | https://store.serif.com/it/update/windows/publisher/1/ |
+> |Affinity by Canva | https://www.affinity.studio/download           |
+> |Photo V2     | https://store.serif.com/update/windows/photo/2/     |
+> |Designer V2  | https://store.serif.com/update/windows/designer/2/  |
+> |Publisher V2 | https://store.serif.com/update/windows/publisher/2/ |
+> |Photo V1     | https://store.serif.com/update/windows/photo/1/     |
+> |Designer V1  | https://store.serif.com/update/windows/designer/1/  |
+> |Publisher V1 | https://store.serif.com/update/windows/publisher/1/ |
 
+> [!NOTE]
+> For Affinity by Canva, you need to select "Enterprise (Intel/AMD)" from the "Download for Windows" drop-down menu on the official download page to download the EXE installer.
 
-I'll use the installer for Affinity Photo V1 as an example.
+We'll use the installer for Affinity Photo V1 as an example.
 
 ```bash
 wine-ew-affinity wine ~/Downloads/affinity-photo-1.10.6.exe
@@ -189,11 +195,49 @@ Once it completes, close the installer.
 Finally, launch the software!
 
 ```bash
-wine-ew-affinity wine ~/.local/share/wine/prefixes/test/drive_c/Program\ Files/Affinity/Photo/Photo.exe
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Photo/Photo.exe
 ```
 
 ![Affinity on Linux Rules](./Screenshots/aolrules.png)
 
+## Commands to launch Affinity software
+
+You can launch the various Affinity apps by running the following commands:
+
+Affinity by Canva:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Affinity/Affinity.exe
+```
+
+Affinity Photo V2:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Photo 2/Photo.exe
+```
+
+Affinity Designer V2:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Designer 2/Designer.exe
+```
+
+Affinity Publisher V2:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Publisher 2/Publisher.exe
+```
+
+Affinity Photo V1:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Photo/Photo.exe
+```
+
+Affinity Designer V1:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Designer/Designer.exe
+```
+
+Affinity Publisher V1:
+```bash
+wine-ew-affinity wine ~/.local/share/wine/prefixes/affinity/drive_c/Program\ Files/Affinity/Publisher/Publisher.exe
+```
 
 ## Additional Tips & Tricks
 
@@ -211,15 +255,37 @@ wine-ew-affinity winecfg
 - Increase the `dpi` to your preference
 
 > [!NOTE]
-> As I understand it, the `dpi` value is a percentage applied to the currently set `Desktop Size`.  
+> As we understand it, the `dpi` value is a percentage applied to the currently set `Desktop Size`.  
 > So, for a 4k monitor, setting the desktop size to `1920 x 1080` and scaling it by 200% works quite well.
 
 ![DPI Fix](./Screenshots/dpifix.png)
 
+### Dark Theme for Wine
+
+To enable the dark theme for Wine, follow these steps:
+
+1. Visit the [repository's `wine-dark-theme.reg` file page](/Auxiliary/Other/wine-dark-theme.reg) to download the `.reg` file by clicking the download button on the top right just like we did for the `.yaml` file earlier.
+2. Save the file to your Downloads folder.
+3. Launch your terminal app, then type `cd Downloads` to change to your Downloads folder.
+4. Run the following command:
+    ```shell
+    wine regedit wine-dark-theme.reg
+    ```
+5. Press `Enter`. You might get a message again saying "Wine could not find a wine-mono package...". Just click `Install`.
+
+If you also want to enable dark theme for the Wine prefix for Affinity, run the following command, and replace `username` with your local user name:
+   ```shell
+   WINEPREFIX="/home/username/.local/share/wine/prefixes/affinity" wine regedit wine-dark-theme.reg
+   ```
+
+> [!NOTE]
+> When running `wine regedit` to install an `.reg` file, the `WINEPREFIX` environment variable only accepts an absolute path as its value, so including another environment variable in the value, such as `$HOME/.local/share/wine/prefixes/affinity` would not work.
+
 ## Creating a .desktop launcher
-Create a .desktop launcher by following this [Desktop Launcher Guide](https://github.com/seapear/AffinityOnLinux/blob/main/Guides/Rum/Guide-DesktopLauncher.md) so you can open affinity from your desktop.
+Create a .desktop launcher by following this [Desktop Launcher Guide](/Guides/Rum/Guide-DesktopLauncher.md) so you can open Affinity from your desktop.
 
 ## Credits
+
 Thanks to:
 - [ElementalWarrior](https://gitlab.winehq.org/ElementalWarrior) for his wine fork
 - [Twig6943](https://github.com/Twig6943) for building the wine binary
