@@ -1,5 +1,18 @@
 # Set Up Wine 10.17+ for Affinity Apps on Linux 
 
+## Table of Contents
+
+- [Why This Guide?](#why-this-guide)
+- [Requirements](#-requirements)
+- [Installation Steps](#-installation-steps)
+- [Troubleshooting](#-troubleshooting)
+- [Optional Enhancements After Installation](#-optional-enhancements-after-installation)
+- [Uninstall Affinity and Wine](#-uninstall-affinity-and-wine)
+- [Verified Environments](#-verified-environments)
+- [Credits](#-credits)
+
+---
+
 ## Why This Guide?
 
 Affinity apps need Windows Runtime (WinRT) APIs, which older Wine versions lacked. 
@@ -107,7 +120,7 @@ Additional components you may want to install with winetricks if you encounter i
 WINEPREFIX="$HOME/.affinity" wine "$HOME/Downloads/Affinity x64.exe"
 ```
 
-Adjust *.exe in the path above for V2 Photo/Designer/Publisher, and run 3 times for each installer.
+The command above installs Affinity by Canva (V3). If you are installing V2 instead, Photo 2, Designer 2, and Publisher 2 each ship as their own separate `.exe` installer. Download each one you want, then repeat the command above once per `.exe`, pointing it at the matching downloaded file, all against the same `$WINEPREFIX`. You do not need to run the same installer file multiple times, only once per app.
 
 Follow normal installation prompts.
 
@@ -162,6 +175,44 @@ Adjust the `drive_c/Program Files` path for Photo 2, Designer 2, or Publishe
 
 ## 🧠 Troubleshooting
 
+### Installer warns "Setup is not recommended... A native installer exists for this CPU type"
+
+At the start of Step 4, the installer may show a dialog titled "Setup is not recommended for the following reasons: A native installer exists for this CPU type", with **Ignore** and **Close** buttons. This is a false positive: the installer's CPU/OS check misfires under Wine, treating it as a platform with its own native (non-x64) installer available. Click **Ignore** and installation proceeds normally.
+
+### GLIBC version mismatch error
+
+```
+wine: could not load ntdll.so: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found
+```
+
+This has mainly been reported by users of the [experimental script installer](/Guides/Wine/Script%20Installer), not this manual guide, since it bundles its own Wine build against a newer GLIBC than some distros ship. If you hit this while following the manual steps above, your distro's Wine package is likely too new (or too old) for your system GLIBC. Update your distro or fall back to your distro's own `winehq-*` package instead of any bundled build. See [Roadmap.md's Known Issues](/Roadmap.md#-known-issues) for more detail.
+
+### Missing .NET 3.5 with native Wine 11.7
+
+If you are on a distro-packaged (native) Wine 11.7 install and Affinity or the installer complains about missing .NET 3.5, this is a known issue ([#130](https://github.com/seapear/AffinityOnLinux/issues/130)) without a confirmed fix yet. If you hit it, try installing the `dotnet35` winetricks component in addition to `dotnet48` from Step 3, and report back on the issue thread with your results.
+
+### Window is cut off / doesn't fill the screen when maximized (KDE Plasma Wayland)
+
+Root cause confirmed on a KDE Plasma 6.7.4 Wayland session: this is [KDE bug 459373](https://bugs.kde.org/show_bug.cgi?id=459373), "Maximized XWayland windows leave pixel gaps when using certain fractional scaling factors." Wine's window runs as an XWayland client, and KWin's maximize sizing breaks specifically at fractional display scales (125%, 135%, 145%, 150%, 175%) that don't divide evenly into your monitor's native resolution. It does not happen at integer scales (100%, 200%, 300%).
+
+Workaround: switch to a scale factor that divides your native resolution evenly. For example, on a 2560x1600 panel, 150% leaves a large crop (2560 / 1.5 = 1706.67, not a whole number) while 160% does not (2560 / 1.6 = 1600 exactly). Change this in System Settings → Display & Monitor, or from a terminal: `kscreen-doctor output.<name>.scale.<factor>` (find `<name>` via `kscreen-doctor -o`). This was fixed upstream in Plasma 6.2.0 for the general case, but a smaller residual edge sliver can still appear on some maximizes even at a "good" scale factor; it is far less severe than the crop at a bad fractional scale. This same KWin/XWayland/fractional-scaling interaction is very likely the underlying cause of [#129](https://github.com/seapear/AffinityOnLinux/issues/129) (title bar not showing when maximized) and [#126](https://github.com/seapear/AffinityOnLinux/issues/126) (cursor offset on GNOME with display scaling) on other desktop environments.
+
+Do not switch Wine to its native Wayland driver (`wine reg add "HKEY_CURRENT_USER\Software\Wine\Drivers" /v Graphics /d wayland /f`) to try to work around this: as of Wine 11.15, `winewayland.drv` does not correctly manage Affinity's floating dockable panel windows (they detach from the main window with no borders, and the canvas area breaks). Stick with the default X11/XWayland driver.
+
+There is a second, separate bug layered on top of the scaling one: even with the scale fixed, clicking Affinity's own **Maximize** button (its title bar draws its own custom chrome, not KDE's) can still compute an undersized target window, confirmed by measuring the actual X11 window geometry (`xwininfo`) before and after. Clicking Maximize is not reliable, including after a full logout/login (ruling out stale compositor state as the cause). Instead, manually drag the window's border out to the screen edges once (`xwininfo` confirms this reaches the true full physical resolution minus the taskbar strip); afterward, using the restore/un-maximize toggle keeps that correct size, so you only need to do the manual drag once per session. A real fix (rather than this workaround) would need either a Wine-side patch to whatever work-area API Affinity's custom maximize logic queries, or a Harmony runtime patch via an AffinityPluginLoader/WineFix-style plugin; not attempted yet.
+
+### Settings dialog (or other dialogs) open blank/white
+
+If **Edit → Settings** (or another dialog) opens with a blank white content area, this is a Wine dialog repaint bug: the dialog's initial paint never fires. Scroll the mouse wheel over the blank area, or resize the dialog slightly, to force a redraw and the content will appear correctly.
+
+### Canva sign-in crashes Affinity, or never completes after clicking "Open Affinity" in the browser
+
+**Fixed.** Root cause fully traced via a decompiled managed stack trace: `Serif.Affinity.Application.ProcessCommandLineArguments` has a branch, only reached for an unrelated `affinity-open-file:` argument, that calls the WinRT type `Windows.ApplicationModel.DataTransfer.SharedStorageAccessManager`. Wine has no implementation of that type, and the .NET CLR resolves every type referenced anywhere in a method's body when it JITs that method (not just the branch actually taken), so *any* call into `ProcessCommandLineArguments` throws `System.TypeLoadException` and crashes the app, including the unrelated `affinity://` OAuth callback path, which is handled by the exact same method (forwarded from the second `Affinity.exe` instance the browser launches, over a named pipe, to the already-running instance).
+
+Fixed by [LoginFix](/Guides/Wine/LoginFix), a community AffinityPluginLoader plugin. It doesn't patch the poisoned method directly (Harmony can't: patching requires decompiling the method's IL, which means resolving the same unresolvable type, even for a plain skip-prefix); instead it patches that method's two callers, which only reference it by signature, and replaces both with a safe reimplementation of the same behavior. No custom Wine build needed, confirmed working on stock distro Wine 11.15. See its README for full details and build/install steps.
+
+Separately (and unrelated to sign-in): if Affinity's main window fails to create its Direct3D device at startup at all (`Log.txt` shows `Attempting to create Direct3D device on default adapter` followed by `DisplayConfigGetDeviceInfo error: 87` and `DXRenderer.cpp(1014): error 0x80004001`), that's Wine's `NtUserDisplayConfigGetDeviceInfo` not implementing the SDR white level query. See [wine-11.15-sdr-white-level.patch](/Guides/Wine/wine-11.15-sdr-white-level.patch) for a small, tested Wine source patch (requires building Wine yourself; a candidate for upstreaming to WineHQ).
+
 ### Manual Winetricks Install
 
 If the Fedora/Nobara package manager fails or tries to remove Wine:
@@ -197,7 +248,7 @@ sudo mv ~/winetricks /usr/local/bin/winetricks
 
 - Provides plugin loading and dynamic patch injection via **Harmony**  
 - Restores **on‑the‑fly settings saving** under Wine  
-- Temporarily skips the Canva sign‑in dialog (until the browser redirect fix is ready)
+- With [LoginFix](/Guides/Wine/LoginFix) added alongside it (see below), fixes Canva sign‑in crashing under Wine
 
 ### Quick Install (Recommended Method)
 
@@ -221,6 +272,21 @@ mv "AffinityHook.exe" "Affinity.exe"
 
 Now your existing launchers still work. `wine .../Affinity.exe` automatically loads AffinityPluginLoader & WineFix.
 
+### Also Install LoginFix (Fixes Canva Sign-In)
+
+Build and drop in [LoginFix](/Guides/Wine/LoginFix) the same way, into the same `apl/plugins/` folder as `WineFix.dll`:
+
+```bash
+cp "$WINEPREFIX/drive_c/Program Files/Affinity/Affinity/AffinityPluginLoader.dll" \
+  path/to/AffinityOnLinux/Guides/Wine/LoginFix/
+cd path/to/AffinityOnLinux/Guides/Wine/LoginFix
+dotnet build -c Release
+cp bin/Release/net48/win-x64/LoginFix.dll \
+  "$WINEPREFIX/drive_c/Program Files/Affinity/Affinity/apl/plugins/"
+```
+
+Requires the [.NET SDK](https://dotnet.microsoft.com) installed on your Linux system (not inside the Wine prefix). See its README for the full explanation of what it fixes.
+
 ### Verify Installation of AffinityPluginLoader
 
 Run Affinity as before:
@@ -233,7 +299,7 @@ WINEPREFIX="$HOME/.affinity" wine "$WINEPREFIX/drive_c/Program Files/Affinity/Af
 > [!NOTE]
 > - Updates to Affinity may overwrite `Affinity.exe`.  
 >   - If that happens, re‑extract the `affinitypluginloader-plus-winefix.tar.xz` bundle.
-> - *WineFix currently disables Canva sign‑in.* It will be restored in a future patch once the redirect handler is stable.
+> - Sign-in used to be unreliable under Wine; installing [LoginFix](/Guides/Wine/LoginFix) alongside WineFix fixes the underlying crash, confirmed working on stock Wine 11.15.
 > - Always download from [Noah C3’s official GitHub releases](https://github.com/noahc3/AffinityPluginLoader/releases).
 
 ### Add Icon to Dock or Panel

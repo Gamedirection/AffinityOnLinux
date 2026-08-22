@@ -30,9 +30,9 @@ _A repository containing information on how to get Affinity software working on 
     - [Guide for Heroic Games Launcher](./Guides/Heroic/Guide.md)
     - [Guide for Bottles](./Guides/Bottles/Guide.md)
     - [Guide for Rum](./Guides/Rum/Guide.md) (terminal)
-5. Report any issues or bugs you find in our repository's [Issues](https://github.com/seapear/AffinityOnLinux/issues) tab, or on our [Discord](https://discord.gg/t5V9ecpJWZ)'s help channels.
-6. If you have a fix or a solution for our guides, submit a [Pull Request](https://github.com/seapear/AffinityOnLinux/pulls) and let us know in #feedback on our [Discord](https://discord.gg/t5V9ecpJWZ).
-7. Finally, grab your ✔️Success Badge in our [Discord](https://discord.gg/t5V9ecpJWZ), we would be love to hear about your real world use of AffinityOnLinux!
+4. Report any issues or bugs you find in our repository's [Issues](https://github.com/seapear/AffinityOnLinux/issues) tab, or on our [Discord](https://discord.gg/t5V9ecpJWZ)'s help channels.
+5. If you have a fix or a solution for our guides, submit a [Pull Request](https://github.com/seapear/AffinityOnLinux/pulls) and let us know in #feedback on our [Discord](https://discord.gg/t5V9ecpJWZ).
+6. Finally, grab your ✔️Success Badge in our [Discord](https://discord.gg/t5V9ecpJWZ), we would be love to hear about your real world use of AffinityOnLinux!
 
 ## Unofficial Methods to Install Affinity on Linux
 

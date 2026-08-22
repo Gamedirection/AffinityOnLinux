@@ -193,3 +193,27 @@ If you also want to enable dark theme for the Wine fork for your installed Affin
    ```shell
    WINEPREFIX="/path/to/wineprefix" wine regedit wine-dark-theme.reg
    ```
+
+## Troubleshooting
+
+### Install fails with "[Errno 104] Connection Reset by Peer"
+
+Confirmed to affect Lutris on CachyOS and Fedora 43 ([Issue #117](https://github.com/seapear/AffinityOnLinux/issues/117)). This is a Lutris bug caused by a Python 3.14 `multiprocessing` change, not an Affinity or Wine problem. If you installed Lutris via your distro's package manager (not Flatpak), edit `/usr/bin/lutris` and add this line right after the other imports, before anything else runs:
+
+```python
+multiprocessing.set_start_method("fork")
+```
+
+Restart Lutris and re-run the install. See the [upstream Lutris forum thread](https://forums.lutris.net/t/errno-104-connection-reset-by-peer/25137) for background. If you installed Lutris via Flatpak instead, this specific fix does not apply; try the Flathub build if you hit this error on a package-manager install.
+
+### Repeated "xalia.exe .NET Framework Initialization Error" prompt during install
+
+Several users hit this during the .NET/dependency install step ([Issue #122](https://github.com/seapear/AffinityOnLinux/issues/122)). In most reports, clicking through the prompt each time it reappears (it can take 3 to 4 clicks) lets the installer continue and finish successfully. If it loops indefinitely instead of eventually finishing, cancel and retry the install rather than leaving it running.
+
+### Duplicate canvas window appears on top of everything
+
+If you hit this on the recommended runner ([Issue #128](https://github.com/seapear/AffinityOnLinux/issues/128)), a reported workaround is switching to the `wine-ge-8-26-x86_64` runner instead. Note this runner has its own rough edges (for example, a new document's window can appear black until you minimize and restore it).
+
+### Affinity freezes when selecting an object in a large or SVG-heavy document
+
+Tracked as [Issue #109](https://github.com/seapear/AffinityOnLinux/issues/109), likely the same underlying Wine `d2d1` limitation as [Issue #76](https://github.com/seapear/AffinityOnLinux/issues/76) (Designer V2 freezing when deselecting a nested SVG group with snapping enabled). No fix yet. If it happens, you do not have to force-kill the app: use your desktop's taskbar to "Terminate" the frozen window, then click **Cancel** on the save-changes prompt that appears. Affinity should become responsive again, though you may need to close and reopen the affected file before you can select anything.

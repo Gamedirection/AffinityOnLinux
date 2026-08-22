@@ -30,11 +30,12 @@ body:
       description: Which app launcher are you using?
       multiple: false
       options:
+        - Wine (Manual, 10.17+)
         - Lutris (Recommended)
         - Bottles
         - Heroic Games Launcher
         - RUM
-      default: 2
+      default: 3
     validations:
       required: true
   - type: dropdown

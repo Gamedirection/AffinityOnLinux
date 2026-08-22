@@ -102,9 +102,16 @@ To set these art assets In Lutris, launch Lutris, right‑click your Affinity 
 
 Helper files installed automatically after setup:  
 `Windows.winmd` → `system32/winmetadata/`  
-`wintypes_shim.dll.so` → `Program Files/Affinity/Affinity/`
+`wintypes.dll` → `Program Files/Affinity/Affinity/` (the `wintypes` native DLL override is also registered automatically)
+
+> [!NOTE]
+> If you install Photo 2, Designer 2, or Publisher 2 separately (V2 apps), the script only places `wintypes.dll` into the V3 `Affinity/Affinity/` directory. Copy it manually into each V2 app's own Program Files directory as well, the same way described in [the manual Wine guide's Step 6](/Guides/Wine/Guide.md#step-6-copy-metadata--shim-files), until the script supports this per app. Related: [Issue #131](https://github.com/seapear/AffinityOnLinux/issues/131).
 
 ---
+
+## 🧠 Troubleshooting
+
+Most reported install time failures (Errno 104 connection reset, repeated xalia.exe prompts, duplicate canvas windows) are not specific to this Wine 10.19 runner and are covered in [the legacy Lutris guide's Troubleshooting section](/Guides/Lutris/Guide.md#troubleshooting).
 
 ## 🧪 Issues and Feedback
 Please open issues or pull requests here:
