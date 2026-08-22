@@ -113,6 +113,12 @@ Helper files installed automatically after setup:
 
 Most reported install time failures (Errno 104 connection reset, repeated xalia.exe prompts, duplicate canvas windows) are not specific to this Wine 10.19 runner and are covered in [the legacy Lutris guide's Troubleshooting section](/Guides/Lutris/Guide.md#troubleshooting).
 
+### Screen flashing / flickering while editing
+
+Confirmed cause, tested on the equivalent Heroic setup: if the runner auto-installs DXVK/VKD3D into the prefix, it stacks a second Direct3D-on-Vulkan translation layer on top of the `renderer=vulkan` winetricks setting this guide enables, and the two fight over the same swapchain. Affinity doesn't need DXVK or VKD3D.
+
+**Fix**: in Lutris, right-click the game -> **Configure** -> **Runner options**, and disable **DXVK**, **DXVK NVAPI**, and **VKD3D** if enabled. Relaunch Affinity.
+
 ## 🧪 Issues and Feedback
 Please open issues or pull requests here:
 👉 [https://github.com/seapear/AffinityOnLinux/issues](https://github.com/seapear/AffinityOnLinux/issues)

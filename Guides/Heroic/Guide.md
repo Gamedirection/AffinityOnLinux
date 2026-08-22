@@ -40,22 +40,26 @@ Copy and paste the Wine fork folder you extracted in the previous step to this f
 3. Set the Wine version to **ElementalWarriorWine** or **Wine-TKG-Affinity**.
 4. Select the x64 setup `.exe` you downloaded from Affinity's website as the executable.
 5. Click **Finish**.
+6. Right-click the game -> **Settings**, and uncheck **Auto Install/Update DXVK**, **DXVK-NVAPI**, and **VKD3D on Prefix**. Affinity doesn't need them, and leaving them on causes screen flashing/flicker later, see [Known Issues](#screen-flashing--flickering-while-editing).
 
 ## 5. Initialize the Wine Prefix
 
 1. Run the setup file from Heroic to initialize the prefix.
-   - It may crash. If it somehow runs successfully, close it manually.
+   - It may crash, or it may complete the Affinity installer successfully right away, either is fine at this stage.
    - Default location is: `/home/$USER/Games/Heroic/Prefixes/default/Affinity`.
+2. Once installed, edit the game in Heroic and update **Select Executable** to the real installed path, `drive_c/Program Files/Affinity/<AppName>/<AppName> x64.exe`. Launching before the next steps will crash, that's expected, dependencies aren't installed yet.
 
 ## 6. Configure Dependencies with Winetricks
 
 1. Right-click on the game in Heroic and select **Settings** from the menu.
 2. On the **WINE** tab, scroll down and click on **Winetricks**.
-3. Search and install the following dependencies:
-    - `allfonts`
+3. Search and install the following dependencies (Heroic's inline search installs one at a time, `corefonts` + `tahoma` together cover what `allfonts` needs for Affinity):
+    - `corefonts`
+    - `tahoma`
     - `dotnet48`
     - `vcrun2022`
 4. Wait for the dependencies to install. Be patient, it's not stuck, just taking time.
+5. You may see **"Your version of wine ... is no longer supported upstream. You should upgrade to 8.x"**. This is winetricks misreading ElementalWarriorWine's version string, harmless, click **OK** and continue.
 
 ## 7. Adjust Wine Settings
 
@@ -81,6 +85,19 @@ Copy and paste the Wine fork folder you extracted in the previous step to this f
     - Change the executable to:  
       `drive_c/Program Files/Affinity/APPNAMEHERE/APPNAMEHERE.exe`
     - Click **Finish** and **Launch** the game.
+
+## Known Issues
+
+### Screen flashing / flickering while editing
+
+Caused by Heroic auto-installing DXVK, DXVK-NVAPI, and VKD3D into the prefix by default, stacking a second Direct3D-on-Vulkan translation layer on top of the `renderer=vulkan` winetricks setting from Step 7, Affinity doesn't need either DXVK or VKD3D and the two fighting over the same swapchain is what causes the flashing.
+
+**Fix**: right-click the game -> **Settings**, and uncheck all three:
+- **Auto Install/Update DXVK on Prefix**
+- **Auto Install/Update DXVK-NVAPI on Prefix**
+- **Auto Install/Update VKD3D on Prefix**
+
+Relaunch Affinity, the flashing is gone. Confirmed fix, not just a workaround.
 
 ## Additional TIps and Tricks
 
