@@ -1,4 +1,4 @@
-# AffinityOnLinux 
+# AffinityOnLinux
 <img src="./Assets/NewLogos/AffinityOnLinux-TightCrop.png" width="100" alt="Logo of Affinity Photo">
 
 _A repository containing information on how to get Affinity software working on GNU/Linux with WINE, a compatibility layer for running Windows programs_ 🐧
@@ -20,41 +20,27 @@ _A repository containing information on how to get Affinity software working on 
   </a>
 </div>
 
-## How to Use This Guide
+## 📖 Full documentation lives on the Wiki
 
-1. Check if your Linux distribution is compatible in [FAQ ❓](/FAQ.md#-tested-methods).
-2. Choose a Wine manager: [Wine 10.17+](./Guides/Wine/Guide.md) (recommended) [Lutris](https://lutris.net/), [Heroic Games Launcher](https://heroicgameslauncher.com/), [Bottles](https://usebottles.com/) or [Rum](https://gitlab.com/xkero/rum).
-3. Choose a guide based on your Wine manager of choice:
-    - [Guide for Wine 10.17+](./Guides/Wine/Guide.md) (Recommended if you are comfortable with using the terminal)
-    - [Guide for Lutris](./Guides/Lutris/Guide.md) (Recommended if you want a GUI Wine manager)
-    - [Guide for Heroic Games Launcher](./Guides/Heroic/Guide.md)
-    - [Guide for Bottles](./Guides/Bottles/Guide.md)
-    - [Guide for Rum](./Guides/Rum/Guide.md) (terminal)
-4. Report any issues or bugs you find in our repository's [Issues](https://github.com/seapear/AffinityOnLinux/issues) tab, or on our [Discord](https://discord.gg/t5V9ecpJWZ)'s help channels.
-5. If you have a fix or a solution for our guides, submit a [Pull Request](https://github.com/seapear/AffinityOnLinux/pulls) and let us know in #feedback on our [Discord](https://discord.gg/t5V9ecpJWZ).
-6. Finally, grab your ✔️Success Badge in our [Discord](https://discord.gg/t5V9ecpJWZ), we would be love to hear about your real world use of AffinityOnLinux!
+**[github.com/Gamedirection/AffinityOnLinux/wiki](https://github.com/Gamedirection/AffinityOnLinux/wiki)**
+
+Install guides for Wine, Lutris, Heroic, Bottles, and Rum, a compatibility matrix, troubleshooting, FAQ, glossary, and full credits all live there now. This repository holds the runnable pieces the wiki links to: scripts, install-script manifests, the LoginFix plugin source, the Wine patch, presets, and images.
+
+## Quick Links
+
+- 🚀 [Getting Started](https://github.com/Gamedirection/AffinityOnLinux/wiki/Getting-Started)
+- 🧪 [Compatibility Matrix](https://github.com/Gamedirection/AffinityOnLinux/wiki/Compatibility-Matrix)
+- 🗺️ [Roadmap & Known Issues](https://github.com/Gamedirection/AffinityOnLinux/wiki/Roadmap)
+- 📜 [Credits](https://github.com/Gamedirection/AffinityOnLinux/wiki/Credits)
+- 💬 [Discord](https://join.affinityonlinux.com)
+- [Issues](https://github.com/seapear/AffinityOnLinux/issues) · [Pull Requests](https://github.com/seapear/AffinityOnLinux/pulls)
 
 ## Unofficial Methods to Install Affinity on Linux
 
-You may check out other methods to install Affinity on Linux:
-
-- [ryzendew's Appimage and Python GUI installer](https://github.com/ryzendew/Linux-Affinity-Installer) (with the AppImage being the easiest method to install Affinity on Linux)
+- [ryzendew's AppImage and Python GUI installer](https://github.com/ryzendew/Linux-Affinity-Installer)
 - [mrshmllow's Nix method](https://github.com/mrshmllow/affinity-nix)
 
-Note that these methods are **not official to this AffinityOnLinux repository**. Therefore, if you need support for these install methods, it is strongly recommended to ask their respective authors directly. This AffinityOnLinux repository and Discord do not provide direct support for these install methods.
-
-## Information
-
-[FAQ ❓](/FAQ.md)
-
-[🗺️ Roadmap & ⚠️ Known issues](/Roadmap.md)
-  - Affinity by Canva - Sign in is not working at the moment. Looking for solutions.
-  - UI settings does not save. There is a [workaround](Guides/Settings.md).
-  - Affinity V1 - [purchased via windows store issue](https://github.com/seapear/AffinityOnLinux/blob/main/FAQ.md#which-affinity-versions-are-supported)
-
-[📜 Credits](/Credits.md)
-
-[💬 AffinityOnLinux Discord](https://join.affinityonlinux.com)
+These are **not official to this repository**. For support with them, ask their authors directly.
 
 ## Disclaimer
 

@@ -1397,7 +1397,7 @@ class AffinityInstallerGUI(QMainWindow):
         
         # Credits link
         credits_label = QLabel(
-            "<b><a href='https://github.com/seapear/AffinityOnLinux/blob/main/Credits.md' style='color: #2196F3; text-decoration: none;'>Credits</a></b> - "
+            "<b><a href='https://github.com/Gamedirection/AffinityOnLinux/wiki/Credits' style='color: #2196F3; text-decoration: none;'>Credits</a></b> - "
             "Credit to all the amazing work everyone has volunteered"
         )
         credits_label.setOpenExternalLinks(True)
