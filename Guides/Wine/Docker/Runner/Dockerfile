@@ -6,6 +6,13 @@
 # "packager" copies only the built output into a clean, minimal tarball,
 # keeping build-only packages out of the shipped artifact.
 #
+# Built as a WoW64 (dual-arch, i386+x86_64) Wine, not a 64-bit-only build:
+# several winetricks verbs Affinity needs (dotnet48, dotnet35) run a 32-bit
+# installer stage internally and fail outright on a pure 64-bit build.
+# Modern Wine's WoW64 design hosts both architectures from one 64-bit Unix
+# process via syscall thunks, no 32-bit runtime libraries needed on the host
+# at all, so this doesn't reintroduce classic biarch portability problems.
+#
 # BASE_IMAGE picks the glibc floor. debian:10 (buster, glibc 2.28) is the
 # verified default: ubuntu:18.04's gcc-mingw-w64 is too old to build Wine
 # 11.15's libs/symcrypt (VAES intrinsics need GCC 8+, 18.04 ships an older
@@ -58,6 +65,7 @@ RUN dpkg --add-architecture i386 && \
         libdbus-1-dev \
         libgnutls28-dev \
         libunwind-dev \
+        libatspi2.0-dev \
         ca-certificates \
         curl \
         xz-utils \
@@ -81,7 +89,7 @@ RUN cd wine-src && \
     done
 
 RUN mkdir -p /build/wine-build64 && cd /build/wine-build64 && \
-    ../wine-src/configure --enable-win64 --without-opencl --without-vulkan \
+    ../wine-src/configure --enable-archs=i386,x86_64 --without-opencl --without-vulkan \
         --disable-tests && \
     make -j"$(nproc)" && \
     make install DESTDIR=/build/out

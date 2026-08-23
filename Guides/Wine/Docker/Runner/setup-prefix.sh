@@ -18,10 +18,18 @@ fi
 
 echo "Initializing prefix at $WINEPREFIX ..."
 "$WINE" wineboot --init
-"$WINE" wineboot --wait
 
-echo "Installing dependencies via winetricks (dotnet48, dotnet35, corefonts, tahoma) ..."
-WINE="$WINE" winetricks -q remove_mono dotnet48 dotnet35 corefonts tahoma
+echo "Installing dependencies via winetricks (remove_mono, vcrun2022, dotnet48, corefonts, tahoma) ..."
+WINE="$WINE" winetricks -q remove_mono vcrun2022 dotnet48 corefonts tahoma
+
+echo "Installing dotnet35 (preventive, unconfirmed fix for #130, not required) ..."
+WINE="$WINE" winetricks -q dotnet35 || echo "dotnet35 install failed, continuing without it (see #130)."
+
+# dotnet40 (a dependency winetricks pulls in for dotnet48) pins the prefix's
+# reported Windows version to WinXP as a side effect and never resets it.
+# Affinity's installer refuses to run on anything below Windows 7 SP1.
+echo "Resetting Windows version to Windows 11 (dotnet40's install chain leaves it pinned at WinXP) ..."
+WINE="$WINE" winetricks -q win11
 
 echo "Registering wintypes as a prefix-wide native DLL override ..."
 "$WINE" reg add "HKCU\\Software\\Wine\\DllOverrides" /v wintypes /d native /f

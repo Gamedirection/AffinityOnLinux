@@ -106,6 +106,51 @@ default), failing with "incompatible types when assigning to type
 a **separate** `fedora:41` container it was never built in, confirming
 actual cross-distro portability rather than just claiming it.
 
+## Current verification status (honest, not yet passing)
+
+Real testing against this runner (fresh WoW64 build, `setup-prefix.sh`,
+then launching Affinity directly) surfaced and fixed three genuine,
+permanent gaps, all now folded into `Dockerfile`/`setup-prefix.sh`:
+
+- **`libatspi2.0-dev` missing at build time.** Without it, Wine's
+  `uiautomationcore.dll` builds but fails to load at runtime
+  (`DllNotFoundException`, `ERROR_MOD_NOT_FOUND`), crashing any WPF app
+  the moment it touches a `ListBox` selection or similar control (WPF
+  always initializes `AutomationPeer`, unconditionally, not just for
+  accessibility users). Affinity's own installer (`SetupUI.exe`, WPF)
+  and Affinity itself both hit this on first launch. Fixed by adding
+  `libatspi2.0-dev` to the builder's package list.
+- **`dotnet40` (a `dotnet48` dependency) pins the prefix's reported
+  Windows version to WinXP** and never resets it, so Affinity's own
+  installer refuses to run ("can only be installed on Windows 7 SP1 or
+  higher"). Fixed: `setup-prefix.sh` now runs `winetricks win11` after
+  the dotnet installs, matching the existing manual wiki guide's own
+  Step 3 command.
+- **winetricks' real `dotnet35` payload reliably fails on Wine** (status
+  67, unrelated to this runner, a longstanding Wine/`.NET 3.5` installer
+  compatibility gap) — but Affinity's installer bootstrapper hard-checks
+  for .NET 3.5's presence via a registry key before it will even start,
+  independent of whether .NET 3.5 code ever actually runs. `setup-prefix.sh`
+  treats the real dotnet35 install as best-effort (already was, see #130);
+  a full fix would set the `NDP\v3.5` presence keys directly, which was
+  verified as a working manual workaround but is not yet folded into the
+  script.
+
+**Still blocking full verification**: after the fixes above, Affinity
+gets much further (reaches its own "New Document" startup dialog,
+`Studio.Application.Main`) but then hits an unhandled native exception
+(`0x80131623`) during WPF's `Window.CreateSourceWindow`, every launch,
+same crash address every time. This reproduces in a **freshly
+initialized** prefix built from `setup-prefix.sh`, but does **not**
+reproduce running the exact same `wine` binary against an existing,
+long-lived, already-configured prefix — meaning the difference is in
+prefix *state*, not in the Wine build itself, but the specific missing
+ingredient has not yet been isolated (`vcrun2022` was tried and ruled
+out). Root cause not found yet. Do not label a build "GameDirection
+build" or release it until this is resolved and the full gate below
+passes — the sign-in and multi-app regression checks (gate items 1)
+cannot run until Affinity can launch at all in a fresh prefix.
+
 ## Verifying a build (or a version bump)
 
 Before calling any build a "GameDirection build" or releasing it, run the
