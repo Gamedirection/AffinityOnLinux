@@ -1,0 +1,70 @@
+--- a/dlls/wintypes/main.c
++++ b/dlls/wintypes/main.c
+@@ -1817,14 +1817,65 @@
+                                   DWORD *metaDataFilePathsCount, HSTRING **metaDataFilePaths,
+                                   DWORD *subNamespacesCount, HSTRING **subNamespaces)
+ {
+-    FIXME("name %s, windowsMetaDataDir %s, metaDataFilePaths %p, subNamespaces %p stub!\n",
++    static const WCHAR default_dir[] = L"C:\\windows\\system32\\winmetadata";
++    static const WCHAR filename[] = L"\\Windows.winmd";
++    const WCHAR *dir;
++    WCHAR *path;
++    DWORD dir_len, path_len;
++    HSTRING *paths;
++    HRESULT hr;
++
++    FIXME("name %s, windowsMetaDataDir %s, metaDataFilePaths %p, subNamespaces %p semi-stub!\n",
+             debugstr_hstring(name), debugstr_hstring(windowsMetaDataDir),
+             metaDataFilePaths, subNamespaces);
+ 
+     if (!metaDataFilePaths && !subNamespaces)
+         return E_INVALIDARG;
+ 
+-    return RO_E_METADATA_NAME_NOT_FOUND;
++    /* Wine does not generate per-namespace .winmd metadata files. Applications
++     * that ship one combined Windows.winmd of their own (e.g. via the
++     * windows-rs project) still expect this function to resolve any requested
++     * namespace to that file rather than fail outright. If such a file exists
++     * in the given (or default) metadata directory, report it as the sole
++     * resolved file for the namespace instead of unconditionally failing. */
++    dir = windowsMetaDataDir ? WindowsGetStringRawBuffer(windowsMetaDataDir, NULL) : default_dir;
++    dir_len = lstrlenW(dir);
++    path_len = dir_len + ARRAY_SIZE(filename) - 1;
++
++    if (!(path = malloc((path_len + 1) * sizeof(WCHAR))))
++        return E_OUTOFMEMORY;
++    memcpy(path, dir, dir_len * sizeof(WCHAR));
++    memcpy(path + dir_len, filename, sizeof(filename));
++
++    if (GetFileAttributesW(path) == INVALID_FILE_ATTRIBUTES)
++    {
++        free(path);
++        return RO_E_METADATA_NAME_NOT_FOUND;
++    }
++
++    if (subNamespacesCount) *subNamespacesCount = 0;
++    if (subNamespaces) *subNamespaces = NULL;
++
++    if (metaDataFilePathsCount) *metaDataFilePathsCount = 0;
++    if (metaDataFilePaths)
++    {
++        if (!(paths = CoTaskMemAlloc(sizeof(*paths))))
++        {
++            free(path);
++            return E_OUTOFMEMORY;
++        }
++        if (FAILED(hr = WindowsCreateString(path, path_len, &paths[0])))
++        {
++            CoTaskMemFree(paths);
++            free(path);
++            return hr;
++        }
++        *metaDataFilePaths = paths;
++        *metaDataFilePathsCount = 1;
++    }
++
++    free(path);
++    return S_OK;
+ }
+ 
+ struct parse_type_context

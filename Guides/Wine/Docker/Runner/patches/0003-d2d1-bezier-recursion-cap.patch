@@ -1,0 +1,47 @@
+--- a/dlls/d2d1/geometry.c
++++ b/dlls/d2d1/geometry.c
+@@ -728,12 +728,23 @@
+  * also done. If neither of those is the case, we subdivide the Bézier segment
+  * and try again. */
+ static BOOL d2d_point_on_bezier_segment(const D2D1_POINT_2F *q, const D2D1_POINT_2F *p0,
+-        const D2D1_BEZIER_SEGMENT *b, const D2D1_MATRIX_3X2_F *transform, float stroke_width, float tolerance)
++        const D2D1_BEZIER_SEGMENT *b, const D2D1_MATRIX_3X2_F *transform, float stroke_width, float tolerance,
++        unsigned int depth)
+ {
+     float d1, d2, d3, d4, d, l, m, w, w2;
+     D2D1_POINT_2F t[7], start, end, v_p;
+     D2D1_BEZIER_SEGMENT b0, b1;
+ 
++    /* At extreme zoom levels the transformed coordinates below exceed
++     * float32's mantissa precision, the error estimate stops shrinking, and
++     * this function would otherwise recurse without bound. Bail out past a
++     * reasonable subdivision depth instead of hanging. */
++    if (depth > 20)
++    {
++        WARN("Bezier subdivision depth limit exceeded, treating point as not on the curve.\n");
++        return FALSE;
++    }
++
+     m = 1.0f;
+     w = stroke_width * 0.5f;
+ 
+@@ -884,8 +895,8 @@
+     d2d_point_lerp(&b0.point2, &t[0], &b0.point1, 0.5f);
+     d2d_point_lerp(&b0.point3, &b0.point2, &b1.point1, 0.5f);
+ 
+-    return d2d_point_on_bezier_segment(q, p0, &b0, transform, stroke_width, tolerance)
+-            || d2d_point_on_bezier_segment(q, &b0.point3, &b1, transform, stroke_width, tolerance);
++    return d2d_point_on_bezier_segment(q, p0, &b0, transform, stroke_width, tolerance, depth + 1)
++            || d2d_point_on_bezier_segment(q, &b0.point3, &b1, transform, stroke_width, tolerance, depth + 1);
+ }
+ 
+ static void d2d_rect_union(D2D1_RECT_F *l, const D2D1_RECT_F *r)
+@@ -4087,7 +4098,7 @@
+                     b.point1 = figure->original_bezier_controls[bezier_idx++];
+                     b.point2 = figure->original_bezier_controls[bezier_idx++];
+                     b.point3 = figure->vertices[j];
+-                    *contains = d2d_point_on_bezier_segment(&point, &p, &b, transform, stroke_width, tolerance);
++                    *contains = d2d_point_on_bezier_segment(&point, &p, &b, transform, stroke_width, tolerance, 0);
+                     p = b.point3;
+                     break;
+ 
